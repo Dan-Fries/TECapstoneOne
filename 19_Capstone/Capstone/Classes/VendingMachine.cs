@@ -9,6 +9,14 @@ namespace Capstone.Classes
     {
         private Dictionary<string, Item> items = new Dictionary<string, Item>();
 
+        private Dictionary<string, string> saleMessage = new Dictionary<string, string>()
+        {
+            { "Chip", "Crunch Crunch, Yum!" },
+            { "Candy", "Munch Munch, Yum!" },
+            { "Drink", "Glug Glug, Yum!" },
+            { "Gum", "Chew Chew, Yum!" },
+        };
+
         public VendingMachine()
         {
 
@@ -45,11 +53,37 @@ namespace Capstone.Classes
             }
         }
 
-        public Item Dispense(string slot)
+        public decimal PurchaseItem(string slot, decimal balance)
         {
+            if (!items.ContainsKey(slot))
+            {
+                Console.WriteLine("The slot you entered does not exist, returning to purchase menu");
+                return 0M;
+            }
+
+            if (items[slot].Quantity == 0)
+            {
+                Console.WriteLine("Sorry but that item is sold out, returning to purchase menu");
+                return 0M;
+            }
+            
             Item currentItem = items[slot];
-            currentItem.Quantity--;
-            return currentItem;
+            if (currentItem.Price > balance)
+            {
+                Console.WriteLine("Sorry but you do not have enough funds please add more and try again!");
+                return 0M;
+            }
+            else
+            {
+                Console.WriteLine($"You succesfully purchased {currentItem.Name}!");
+                Console.WriteLine();
+                Console.WriteLine(saleMessage[currentItem.Type]);
+                Console.WriteLine($"{currentItem.Price} has been deducted from your balance!");
+                currentItem.Quantity--;
+                return currentItem.Price;
+            }
+
+ 
         }
     }
 }

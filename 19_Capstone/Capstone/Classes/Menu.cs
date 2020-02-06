@@ -10,14 +10,14 @@ namespace Capstone.Classes
     {
         const string path = "C:\\Users\\Student\\git\\c-module-1-capstone-team-5\\19_Capstone\\vendingmachine.csv";
 
-        private VendingMachine vendingMachine { get; }
+        public VendingMachine vendingMachine { get; set; }
 
-        private PurchaseMenu purchaseMenu { get; }
+        public PurchaseMenu purchaseMenu { get; }
 
-        Dictionary<string, Item> MenuList = new Dictionary<string, Item>()
-        {
+        //Dictionary<string, Item> MenuList = new Dictionary<string, Item>()
+        //{
             
-        };
+        //};
 
 
 
@@ -28,10 +28,12 @@ namespace Capstone.Classes
         public Menu (VendingMachine vm)
         {
             vendingMachine = vm;
+            purchaseMenu = new PurchaseMenu(vm);
         }
 
         public void Display ()
         {
+            Console.Clear();
             //Display menu options
             Console.Write(
                 @"Please choose from the following options:
@@ -46,6 +48,10 @@ namespace Capstone.Classes
             if (selection == 1)
             {
                 vendingMachine.DisplayItems();
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to continue");
+                Console.ReadLine();
+                Display();
             }
             else if (selection == 2)
             {

@@ -9,55 +9,67 @@ namespace Capstone.Classes
     {
         public decimal CurrentBalance { get; private set; }
         private VendingMachine VM { get; set; }
-
-        Dictionary<int, string> menuOptions = new Dictionary<int, string>()
-        {
-            { 1, "Feed Money" },
-            { 2, "Select Product" },
-            { 3, "Finish Transaction" }
-        };
         public PurchaseMenu(VendingMachine vm)
         {
             VM = vm;
             CurrentBalance = 0.00M;
+           
         }
 
         public void Display()
         {
-            foreach (KeyValuePair<int, string> kvp in menuOptions)
-            {
-                Console.WriteLine($"({kvp.Key}) {kvp.Value}");
-            }
+            Console.Clear();
+            Console.WriteLine("(1) Feed Money");
+            Console.WriteLine("(2) Select Product");
+            Console.WriteLine("(3) Finish Transaction");
             Console.WriteLine();
             Console.WriteLine($"Current Money Provided: {CurrentBalance}");
+            GetUserMenuInput();
         }
 
-
-        public void PurchaseItem(string slot)
+        public void FeedMoney()
         {
-            Item current = VM.Dispense(slot);
-            AuditLog(current.Type, CurrentBalance + current.Price, CurrentBalance);
+            Console.WriteLine("How many dollars do you want to feed?: ");
+            int dollar;
+            bool isValid = int.TryParse(Console.ReadLine(), out dollar);
+            while (!isValid)
+            {
+                Console.WriteLine("You did not enter a valid amount please enter a whole dollar amount: ");
+
+
+            }
+            CurrentBalance += dollar;
+            Console.Clear();
+            Display();
         }
 
-        public void AuditLog(string transactionType, decimal previousBalance, decimal newBalance)
+        //private void PurchaseItem(string slot)
+        //{
+            
+        //    Item current = VM.Dispense(slot);
+        //    AuditLog(current.Type, CurrentBalance + current.Price, CurrentBalance);
+        //}
+
+        private void AuditLog(string transactionType, decimal previousBalance, decimal newBalance)
         {
             const string PATH = "C:\\Users\\Student\\git\\c-module-1-capstone-team-5\\19_Capstone\\Log.txt";
             if (!File.Exists(PATH))
             {
                 File.Create(PATH);
             }
-            using (StreamWriter sw = new StreamWriter(PATH))
+            using (StreamWriter sw = new StreamWriter(PATH, append: true))
             {
                 sw.WriteLine($"DATEPLACEHOLDER {transactionType} {previousBalance} {newBalance}");
             }
         }
 
-        public void GetUserInput()
+        private void GetUserMenuInput()
         {
             int selection;
+            Console.Write("Enter your selection: ");
             bool isValid = int.TryParse(Console.ReadLine(), out selection);
 
-            while (!isValid && selection >=1 && selection <= 3)
+            while (!isValid || selection < 1 || selection > 3)
             {
                 Console.WriteLine("You did not enter a valid choice please enter the number corresponding to your selection");
                 isValid = int.TryParse(Console.ReadLine(), out selection);
@@ -65,27 +77,34 @@ namespace Capstone.Classes
 
             switch (selection)
             {
-                case 1: 
-                    Console.WriteLine("Not Implemented");
+                case 1:
+                    FeedMoney();
                     break;
                 case 2:
-                    PurchaseItem("A1");
-                    VM.DisplayItems();
+                    PurchaseItemSubMenu();
+
                     break;
                 case 3:
-                    Console.WriteLine("Not Implemented");
-                    break;
-                default:
+                    Menu mn = new Menu(VM);
+                    mn.Display();
                     break;
 
             }
-
-
         }
 
-        //public override void Exit()
-        //{
-        //    base.Exit();
-        //}
+        private void PurchaseItemSubMenu()
+        {
+            Console.Clear();
+            VM.DisplayItems();
+            Console.WriteLine();
+            Console.Write("Please enter an item to purchase by slot (A1, B3, etc): ");
+            string input = Console.ReadLine();
+            decimal debitAmount = VM.PurchaseItem(input, CurrentBalance);
+            CurrentBalance -= debitAmount;
+            Console.WriteLine("Press Enter to continue");
+            Console.ReadLine();
+            Display();
+
+        }
     }
 }
