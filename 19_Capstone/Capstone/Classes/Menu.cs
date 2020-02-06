@@ -47,6 +47,7 @@ namespace Capstone.Classes
             // Based on user input, determine outcome.
             if (selection == 1)
             {
+                // Display Menu Items
                 vendingMachine.DisplayItems();
                 Console.WriteLine();
                 Console.WriteLine("Press Enter to continue");
@@ -55,14 +56,17 @@ namespace Capstone.Classes
             }
             else if (selection == 2)
             {
+                // Display Purchase Menu
                 purchaseMenu.Display();
             }
             else if (selection == 3)
             {
+                // Exit Program
                 return;
             } 
             else
             {
+                // Prompt user to add valid selection
                 while (!(selection >= 1 || selection <= 3))
                 {
                     Console.WriteLine("Please enter valid selection: ");
