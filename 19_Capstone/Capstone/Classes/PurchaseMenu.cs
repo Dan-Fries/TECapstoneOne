@@ -9,6 +9,7 @@ namespace Capstone.Classes
     {
         public decimal CurrentBalance { get; set; }
         
+        
 
         private VendingMachine VM { get; set; }
         public PurchaseMenu(VendingMachine vm)
@@ -99,5 +100,7 @@ namespace Capstone.Classes
             Display();
 
         }
+
+        
     }
 }

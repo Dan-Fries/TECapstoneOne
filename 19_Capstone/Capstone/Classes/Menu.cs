@@ -64,10 +64,15 @@ namespace Capstone.Classes
                 // Exit Program
                 return;
             } 
+            else if(selection == 4)
+            {
+                // Generate a sales report and print it to file.
+                vendingMachine.PrintSalesReport();
+            }
             else
             {
                 // Prompt user to add valid selection
-                while (!(selection >= 1 || selection <= 3))
+                while (!(selection >= 1 || selection <= 4))
                 {
                     Console.WriteLine("Please enter valid selection: ");
                     input = Console.ReadLine();

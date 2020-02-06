@@ -19,7 +19,7 @@ namespace Capstone.Classes
 
         public VendingMachine()
         {
-
+            GetTotalSales = 0;
         }
         public void Stock()
         {
@@ -53,8 +53,10 @@ namespace Capstone.Classes
             }
         }
 
+
         public decimal PurchaseItem(string slot, decimal balance)
         {
+            
             if (!items.ContainsKey(slot))
             {
                 Console.WriteLine("The slot you entered does not exist, returning to purchase menu");
@@ -80,6 +82,7 @@ namespace Capstone.Classes
                 Console.WriteLine(saleMessage[currentItem.Type]);
                 Console.WriteLine($"{currentItem.Price} has been deducted from your balance!");
                 AuditLog(currentItem.Type, balance, balance - currentItem.Price);
+                GetTotalSales += currentItem.Price;
                 currentItem.Quantity--;
                 return currentItem.Price;
             }
@@ -98,6 +101,29 @@ namespace Capstone.Classes
             {
                 sw.WriteLine($"DATEPLACEHOLDER {transactionType} {previousBalance} {newBalance}");
             }
+        }
+
+        public decimal GetTotalSales { get; set; }
+       
+        public void PrintSalesReport()
+        {
+            string timeStamp = string.Format(("{0:yyyy-MM-dd_hh-mm-ss}"), DateTime.Now);
+            string path = ($"C:\\Users\\Student\\git\\c-module-1-capstone-team-5\\19_Capstone\\SalesReports\\{timeStamp}.txt");
+
+            File.Create(path);
+
+                using (StreamWriter report = new StreamWriter(path))
+                {
+                    foreach (KeyValuePair<string, Item> item in items)
+                    {
+                    report.WriteLine($"{item} | {item.Value.Quantity}");
+                    }
+
+                report.WriteLine($"Total Sales: ${GetTotalSales}");
+                }
+
+
+            
         }
     }
 }
