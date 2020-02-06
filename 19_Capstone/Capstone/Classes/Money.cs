@@ -8,13 +8,13 @@ namespace Capstone.Classes
     {
         
 
-        public decimal Balance { get; set; }
+        
         public Money()
         { 
-            Balance = 0;
+            
         }
 
-        private void MakeChange(decimal balance) 
+        public void MakeChange(decimal balance) 
         {
             const decimal Quarter = .25M;
             const decimal Dime = .10M;
@@ -22,12 +22,12 @@ namespace Capstone.Classes
             int numberOfQuarters = 0;
             int numberOfDimes = 0;
             int numberOfNickels = 0;
-            Balance = balance;
+            
             
             
             while (balance <= 0)
             {
-                Console.WriteLine("Not enough money received. Please insert more money!");
+                Console.WriteLine("No changed received. Thank you for purchasing!");
                 return;
             }
             while (balance >= .25M)
@@ -53,6 +53,7 @@ namespace Capstone.Classes
                                   & {numberOfNickels} Nickels
                                 Press 'enter' to continue.
                                 Thank you!");
+            Console.ReadLine();
             
 
         }

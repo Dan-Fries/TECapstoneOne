@@ -7,12 +7,14 @@ namespace Capstone.Classes
 {
     public class PurchaseMenu
     {
-        public decimal CurrentBalance { get; private set; }
+        public decimal CurrentBalance { get; set; }
+        
+
         private VendingMachine VM { get; set; }
         public PurchaseMenu(VendingMachine vm)
         {
             VM = vm;
-            CurrentBalance = 0.00M;
+            CurrentBalance = 0;
            
         }
 
@@ -50,18 +52,7 @@ namespace Capstone.Classes
         //    AuditLog(current.Type, CurrentBalance + current.Price, CurrentBalance);
         //}
 
-        private void AuditLog(string transactionType, decimal previousBalance, decimal newBalance)
-        {
-            const string PATH = "C:\\Users\\Student\\git\\c-module-1-capstone-team-5\\19_Capstone\\Log.txt";
-            if (!File.Exists(PATH))
-            {
-                File.Create(PATH);
-            }
-            using (StreamWriter sw = new StreamWriter(PATH, append: true))
-            {
-                sw.WriteLine($"DATEPLACEHOLDER {transactionType} {previousBalance} {newBalance}");
-            }
-        }
+
 
         private void GetUserMenuInput()
         {
@@ -85,6 +76,8 @@ namespace Capstone.Classes
 
                     break;
                 case 3:
+                    Money money = new Money();
+                    money.MakeChange(CurrentBalance);
                     Menu mn = new Menu(VM);
                     mn.Display();
                     break;

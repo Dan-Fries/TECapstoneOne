@@ -79,11 +79,25 @@ namespace Capstone.Classes
                 Console.WriteLine();
                 Console.WriteLine(saleMessage[currentItem.Type]);
                 Console.WriteLine($"{currentItem.Price} has been deducted from your balance!");
+                AuditLog(currentItem.Type, balance, balance - currentItem.Price);
                 currentItem.Quantity--;
                 return currentItem.Price;
             }
 
  
+        }
+
+        public void AuditLog(string transactionType, decimal previousBalance, decimal newBalance)
+        {
+            const string PATH = "C:\\Users\\Student\\git\\c-module-1-capstone-team-5\\19_Capstone\\Log.txt";
+            if (!File.Exists(PATH))
+            {
+                File.Create(PATH);
+            }
+            using (StreamWriter sw = new StreamWriter(PATH, append: true))
+            {
+                sw.WriteLine($"DATEPLACEHOLDER {transactionType} {previousBalance} {newBalance}");
+            }
         }
     }
 }
