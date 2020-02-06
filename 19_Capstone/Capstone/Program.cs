@@ -1,5 +1,6 @@
 ﻿using Capstone.Classes;
 using System;
+using System.Collections.Generic;
 
 namespace Capstone
 {
@@ -7,12 +8,9 @@ namespace Capstone
     {
         static void Main(string[] args)
         {
-            VendingMachine vm = new VendingMachine();
-            vm.Stock();
-            vm.DisplayItems();
-            vm.Dispense("A1");
-            vm.Dispense("A1");
-            vm.DisplayItems();
+            
         }
+
+
     }
 }

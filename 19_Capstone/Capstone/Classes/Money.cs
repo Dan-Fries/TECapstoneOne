@@ -6,12 +6,12 @@ namespace Capstone.Classes
 {
     public class Money
     {
-        public decimal Nickel { get; private set }
-        public decimal Dime { get; private set }
-        public decimal Quarter { get; private set }
-        public decimal Dollar { get; private set }
+        public decimal Nickel { get; private set; }
+        public decimal Dime { get; private set; }
+        public decimal Quarter { get; private set; }
+        public decimal Dollar { get; private set; }
         
-        public decimal Balance { get; set }
+        public decimal Balance { get; set; }
         public Money(decimal balance)
         {
             balance = 0;

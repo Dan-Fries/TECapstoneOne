@@ -6,20 +6,41 @@ namespace Capstone.Classes
 {
     public class PurchaseMenu : Menu
     {
-        public PurchaseMenu(Dictionary<string, item> ) : base(Dictionary<string, item>)
+        private static Dictionary<string, Item> MenuList;
+
+        public PurchaseMenu() : base(MenuList)
         {
+
         }
 
-        public decimal CurrentBalance {get; }
+        public decimal CurrentBalance { get; }
 
-        public void PurchaseItem ()
+       
+
+        #region Methods
+
+
+
+        public void DisplayItems()
         {
-            
+            foreach (KeyValuePair<string, Item> kvp in MenuList)
+            {
+                Console.WriteLine($"{kvp.Key}) {kvp.Value.Name} - {kvp.Value.Price} - {kvp.Value.Quantity}");
+            }
+        }
+
+        public void PurchaseItem()
+        {
+
         }
 
         public override void Exit()
         {
             base.Exit();
         }
+
+
+
+        #endregion
     }
 }
