@@ -9,6 +9,10 @@ namespace Capstone.Classes
     {
         private Dictionary<string, Item> items = new Dictionary<string, Item>();
 
+        public VendingMachine()
+        {
+
+        }
         public void Stock()
         {
             const string path = "C:\\Users\\Student\\git\\c-module-1-capstone-team-5\\19_Capstone\\vendingmachine.csv";

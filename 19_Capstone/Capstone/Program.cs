@@ -9,9 +9,8 @@ namespace Capstone
         {
             VendingMachine vm = new VendingMachine();
             vm.Stock();
-            PurchaseMenu pm = new PurchaseMenu(vm);
-            pm.Display();
-            pm.GetUserInput();
+            Menu mainMenu = new Menu(vm);
+            mainMenu.Display();
         }
     }
 }

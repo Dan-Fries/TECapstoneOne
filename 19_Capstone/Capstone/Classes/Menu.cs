@@ -10,9 +10,9 @@ namespace Capstone.Classes
     {
         const string path = "C:\\Users\\Student\\git\\c-module-1-capstone-team-5\\19_Capstone\\vendingmachine.csv";
 
-        VendingMachine vendingMachine = new VendingMachine();
+        private VendingMachine vendingMachine { get; }
 
-        PurchaseMenu purchaseMenu = new PurchaseMenu();
+        private PurchaseMenu purchaseMenu { get; }
 
         Dictionary<string, Item> MenuList = new Dictionary<string, Item>()
         {
@@ -25,19 +25,20 @@ namespace Capstone.Classes
 
         
 
-        public Menu (Dictionary<string, Item> menuList)
+        public Menu (VendingMachine vm)
         {
-            MenuList = menuList;
+            vendingMachine = vm;
         }
 
         public void Display ()
         {
             //Display menu options
-            Console.WriteLine("@" +
-                "Please choose from the following options:" +
-                "\t 1. Display Vending Machine Items" +
-                "\t 2. Purchase Menu" +
-                "\t 3. Exit");
+            Console.Write(
+                @"Please choose from the following options:
+                    1. Display Vending Machine Items
+                    2. Purchase Menu
+                    3. Exit
+                    ");
             string input = Console.ReadLine();
             int selection = int.Parse(input);
 
@@ -48,7 +49,7 @@ namespace Capstone.Classes
             }
             else if (selection == 2)
             {
-                purchaseMenu.DisplayItems();
+                purchaseMenu.Display();
             }
             else if (selection == 3)
             {
