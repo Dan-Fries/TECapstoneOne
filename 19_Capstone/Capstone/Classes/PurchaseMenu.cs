@@ -7,12 +7,14 @@ namespace Capstone.Classes
 {
     public class PurchaseMenu
     {
-        public decimal CurrentBalance { get; private set; }
+        public decimal CurrentBalance { get; set; }
+        
+
         private VendingMachine VM { get; set; }
         public PurchaseMenu(VendingMachine vm)
         {
             VM = vm;
-            CurrentBalance = 0.00M;
+            CurrentBalance = 0;
            
         }
 
@@ -85,6 +87,8 @@ namespace Capstone.Classes
 
                     break;
                 case 3:
+                    Money money = new Money();
+                    money.MakeChange(CurrentBalance);
                     Menu mn = new Menu(VM);
                     mn.Display();
                     break;

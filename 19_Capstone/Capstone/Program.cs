@@ -7,9 +7,10 @@ namespace Capstone
     {
         static void Main(string[] args)
         {
-            // Display main menu
-
-            // 
+            VendingMachine vm = new VendingMachine();
+            vm.Stock();
+            Menu mn = new Menu(vm);
+            mn.Display();
         }
     }
 }
