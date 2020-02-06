@@ -1,8 +1,8 @@
-﻿namespace Capstone.Classes
-{
-    public interface IReportable
-    {
-        string Reporting();
-        
-    }
-}
+﻿//namespace Capstone.Classes
+//{
+//    public interface IReportable
+//    {
+//        void Audit();
+
+//    }
+//}

@@ -29,14 +29,23 @@ namespace Capstone.Classes
         {
             foreach (KeyValuePair<string, Item> kvp in items)
             {
-                Console.WriteLine($"{kvp.Key}) {kvp.Value.Name} - {kvp.Value.Price} - {kvp.Value.Quantity}");
+                if (kvp.Value.Quantity == 0)
+                {
+                    Console.WriteLine($"{kvp.Key}) {kvp.Value.Name} - {kvp.Value.Price} - SOLD OUT");
+                }
+                else
+                {
+                    Console.WriteLine($"{kvp.Key}) {kvp.Value.Name} - {kvp.Value.Price} - {kvp.Value.Quantity}");
+                }
+
             }
         }
 
-        public void Dispense(string slot)
+        public Item Dispense(string slot)
         {
             Item currentItem = items[slot];
             currentItem.Quantity--;
+            return currentItem;
         }
     }
 }
