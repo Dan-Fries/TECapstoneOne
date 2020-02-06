@@ -6,26 +6,56 @@ namespace Capstone.Classes
 {
     public class Money
     {
-        public decimal Nickel { get; private set; }
-        public decimal Dime { get; private set; }
-        public decimal Quarter { get; private set; }
-        public decimal Dollar { get; private set; }
         
+
         public decimal Balance { get; set; }
-        public Money(decimal balance)
-        {
-            balance = 0;
-            Dollar = 1.00M;
-            Quarter = 0.25M;
-            Dime = 0.10M;
-            Nickel = 0.05M;
-
+        public Money()
+        { 
+            Balance = 0;
         }
 
-        public decimal GetBalance ()
+        private void MakeChange(decimal balance) 
         {
+            const decimal Quarter = .25M;
+            const decimal Dime = .10M;
+            const decimal Nickel = .05M;
+            int numberOfQuarters = 0;
+            int numberOfDimes = 0;
+            int numberOfNickels = 0;
+            Balance = balance;
+            
+            
+            while (balance <= 0)
+            {
+                Console.WriteLine("Not enough money received. Please insert more money!");
+                return;
+            }
+            while (balance >= .25M)
+            {
+                numberOfQuarters = (int)Math.Truncate(balance / Quarter);
+                balance = balance % .25M;
+            }
+            while (balance >= .10M)
+            {
+                numberOfDimes = (int)Math.Truncate(balance / Dime);
+                balance = balance % .10M;
+            }
+            while (balance >= .05M)
+            {
+                numberOfNickels = (int)Math.Truncate(balance / Nickel);
+                balance = balance % .05M;
+            }
 
-            return Balance;
+            Console.WriteLine($@"Your change is {balance}.
+                                You will recieve:
+                                    {numberOfQuarters} Quarters
+                                    {numberOfDimes} Dimes
+                                  & {numberOfNickels} Nickels
+                                Press 'enter' to continue.
+                                Thank you!");
+            
+
         }
+       
     }
 }
