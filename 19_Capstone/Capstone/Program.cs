@@ -7,9 +7,7 @@ namespace Capstone
     {
         static void Main(string[] args)
         {
-            // Display main menu
 
-            // 
         }
     }
 }
