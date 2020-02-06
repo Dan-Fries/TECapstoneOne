@@ -6,12 +6,12 @@ namespace Capstone.Classes
 {
     public class Money
     {
-        
 
-        
-        public Money()
-        { 
-            
+        private VendingMachine VM { get; set; }
+
+        public Money(VendingMachine vm)
+        {
+            VM = vm;
         }
 
         public void MakeChange(decimal balance) 
@@ -23,8 +23,8 @@ namespace Capstone.Classes
             int numberOfDimes = 0;
             int numberOfNickels = 0;
             
-            
-            
+            VM.AuditLog("GIVE CHANGE", balance, 0.00M);
+
             while (balance <= 0)
             {
                 Console.WriteLine("No changed received. Thank you for purchasing!");

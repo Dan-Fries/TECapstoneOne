@@ -56,7 +56,7 @@ namespace Capstone.Classes
 
         public decimal PurchaseItem(string slot, decimal balance)
         {
-            
+
             if (!items.ContainsKey(slot))
             {
                 Console.WriteLine("The slot you entered does not exist, returning to purchase menu");
@@ -68,7 +68,7 @@ namespace Capstone.Classes
                 Console.WriteLine("Sorry but that item is sold out, returning to purchase menu");
                 return 0M;
             }
-            
+
             Item currentItem = items[slot];
             if (currentItem.Price > balance)
             {
@@ -87,7 +87,7 @@ namespace Capstone.Classes
                 return currentItem.Price;
             }
 
- 
+
         }
 
         public void AuditLog(string transactionType, decimal previousBalance, decimal newBalance)
@@ -99,31 +99,35 @@ namespace Capstone.Classes
             }
             using (StreamWriter sw = new StreamWriter(PATH, append: true))
             {
-                sw.WriteLine($"DATEPLACEHOLDER {transactionType} {previousBalance} {newBalance}");
+                sw.WriteLine($"{DateTime.Now} {transactionType} {previousBalance:c} {newBalance:c}");
             }
         }
 
         public decimal GetTotalSales { get; set; }
-       
+
         public void PrintSalesReport()
         {
             string timeStamp = string.Format(("{0:yyyy-MM-dd_hh-mm-ss}"), DateTime.Now);
             string path = ($"C:\\Users\\Student\\git\\c-module-1-capstone-team-5\\19_Capstone\\SalesReports\\{timeStamp}.txt");
 
-            File.Create(path);
+            if (!File.Exists(path))
+            {
+                File.Create(path);
+            }
 
-                using (StreamWriter report = new StreamWriter(path))
+
+            using (StreamWriter report = new StreamWriter(path))
+            {
+                foreach (KeyValuePair<string, Item> item in items)
                 {
-                    foreach (KeyValuePair<string, Item> item in items)
-                    {
                     report.WriteLine($"{item} | {item.Value.Quantity}");
-                    }
-
-                report.WriteLine($"Total Sales: ${GetTotalSales}");
                 }
 
+                report.WriteLine($"Total Sales: ${GetTotalSales}");
+            }
 
-            
+
+
         }
     }
 }

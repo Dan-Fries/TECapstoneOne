@@ -33,14 +33,15 @@ namespace Capstone.Classes
         public void FeedMoney()
         {
             Console.WriteLine("How many dollars do you want to feed?: ");
-            int dollar;
-            bool isValid = int.TryParse(Console.ReadLine(), out dollar);
+            decimal dollar;
+            bool isValid = decimal.TryParse(Console.ReadLine(), out dollar);
             while (!isValid)
             {
                 Console.WriteLine("You did not enter a valid amount please enter a whole dollar amount: ");
 
 
             }
+            VM.AuditLog("FEED MONEY: ", CurrentBalance, CurrentBalance + dollar);
             CurrentBalance += dollar;
             Console.Clear();
             Display();
@@ -77,7 +78,7 @@ namespace Capstone.Classes
 
                     break;
                 case 3:
-                    Money money = new Money();
+                    Money money = new Money(VM);
                     money.MakeChange(CurrentBalance);
                     Menu mn = new Menu(VM);
                     mn.Display();
