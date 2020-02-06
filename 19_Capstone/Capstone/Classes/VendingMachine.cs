@@ -110,13 +110,7 @@ namespace Capstone.Classes
             string timeStamp = string.Format(("{0:yyyy-MM-dd_hh-mm-ss}"), DateTime.Now);
             string path = ($"C:\\Users\\Student\\git\\c-module-1-capstone-team-5\\19_Capstone\\SalesReports\\{timeStamp}.txt");
 
-            if (!File.Exists(path))
-            {
-                File.Create(path);
-            }
-
-
-            using (StreamWriter report = new StreamWriter(path))
+               using (StreamWriter report = new StreamWriter(path))
             {
                 foreach (KeyValuePair<string, Item> item in items)
                 {
