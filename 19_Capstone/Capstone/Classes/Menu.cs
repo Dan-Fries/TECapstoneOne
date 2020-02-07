@@ -8,29 +8,21 @@ namespace Capstone.Classes
 {
     public class Menu
     {
-        const string path = "C:\\Users\\Student\\git\\c-module-1-capstone-team-5\\19_Capstone\\vendingmachine.csv";
-
-        public VendingMachine vendingMachine { get; set; }
+        #region Properties
+        public VendingMachine vendingMachine { get; }
 
         public PurchaseMenu purchaseMenu { get; }
+        #endregion
 
-        //Dictionary<string, Item> MenuList = new Dictionary<string, Item>()
-        //{
-            
-        //};
-
-
-
-
-
-        
-
+        #region Constructors
         public Menu (VendingMachine vm)
         {
             vendingMachine = vm;
             purchaseMenu = new PurchaseMenu(vm);
         }
+        #endregion
 
+        #region Methods
         public void Display ()
         {
             Console.Clear();
@@ -68,6 +60,12 @@ namespace Capstone.Classes
             {
                 // Generate a sales report and print it to file.
                 vendingMachine.PrintSalesReport();
+
+                //Inform the user that a report was generated and return to main menu
+                Console.WriteLine("Sales report generated, check the SalesReport folder to view the report.");
+                Console.WriteLine("Press enter to continue...");
+                Console.ReadLine();
+                Display();
             }
             else
             {
@@ -76,24 +74,9 @@ namespace Capstone.Classes
                 {
                     Console.WriteLine("Please enter valid selection: ");
                     input = Console.ReadLine();
-                }
-                
+                }               
             }
         }
-
-        public string Read ()
-        {
-            return null;
-        }
-
-        virtual public void Exit ()
-        {
-            return;
-        }
-
-        public string Reporting()
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }

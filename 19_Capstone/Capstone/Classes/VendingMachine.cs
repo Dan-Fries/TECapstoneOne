@@ -20,6 +20,9 @@ namespace Capstone.Classes
             { "Gum", "Chew Chew, Yum!" },
         };
 
+        //Property to store the current balance the user has fed into the vending machine
+        public decimal CurrentBalance { get; set; }
+
         //Property to store total sales, resets to 0 each time the program is started.
         public decimal GetTotalSales { get; set; }
         #endregion
@@ -30,6 +33,7 @@ namespace Capstone.Classes
         {
             GetTotalSales = 0;
             Stock();
+            CurrentBalance = 0;
         }
         #endregion
 
@@ -70,58 +74,82 @@ namespace Capstone.Classes
         }
 
         //Method to purchase an item returns a decimal with the amount charged for the transaction
-        public decimal PurchaseItem(string slot, decimal balance)
+        public void PurchaseItem(string slot)
         {
             //Check if the user entered an invalid slot number return 0 since no transaction takes place
             if (!items.ContainsKey(slot))
             {
                 Console.WriteLine("The slot you entered does not exist, returning to purchase menu");
-                return 0M;
+                return;
             }
 
             //Check if the item selected is sold out, if it is return 0 as no transaction takes place
             if (items[slot].Quantity == 0)
             {
                 Console.WriteLine("Sorry but that item is sold out, returning to purchase menu");
-                return 0M;
+                return;
             }
 
             //Check if the user has enough funds to complete the transaction if not return 0 and display a message otherwise process the transaction and return the purchase price to the caller
             Item currentItem = items[slot];
-            if (currentItem.Price > balance)    //Insufficient funds for purchase
+            if (currentItem.Price > CurrentBalance)    //Insufficient funds for purchase
             {
                 Console.WriteLine("Sorry but you do not have enough funds please add more and try again!");
-                return 0M;
+                return;
             }
             else                                //Successful purchase
             {
                 //Display purchase success message
                 Console.WriteLine($"You succesfully purchased {currentItem.Name}!");
-                Console.WriteLine();
 
                 //Display appropriate message based on type of item purchased
                 Console.WriteLine(saleMessage[currentItem.Type]);
+                Console.WriteLine();
 
                 //Inform the user how much has been deducted from their balance
                 Console.WriteLine($"{currentItem.Price} has been deducted from your balance!");
 
                 //Log the purchase to the audit log
-                AuditLog(currentItem.Type, balance, balance - currentItem.Price);
+                AuditLog(currentItem.Type, CurrentBalance, CurrentBalance - currentItem.Price);
 
-                //Complete the sale by adding the purchase to Total Sales and decrementing the quantity of the item in stock
+                //Complete the sale by adding the purchase to Total Sales subtracting from CurrentBalance and decrementing the quantity of the item in stock
                 GetTotalSales += currentItem.Price;
                 currentItem.Quantity--;
-
-                //Return purchase price to caller to update balance
-                return currentItem.Price;
+                CurrentBalance -= currentItem.Price;
+                return;
             }
+        }
+
+        //Method to feed money to the vending machine and update current balance
+        public void FeedMoney()
+        {
+            //Prompt the user to enter an amount of dollars to feed in whole dollar amounts
+            Console.WriteLine("How many dollars do you want to feed?: ");
+            int dollar;
+            bool isValid = int.TryParse(Console.ReadLine(), out dollar);
+
+            //Data validation
+            while (!isValid)
+            {
+                Console.WriteLine("You did not enter a valid amount please enter a whole dollar amount: ");
+                isValid = int.TryParse(Console.ReadLine(), out dollar);
+            }
+            
+            //Once we have a valid user input log this ammount to the audit log
+            AuditLog("FEED MONEY: ", CurrentBalance, CurrentBalance + dollar);
+
+            //Update the current balance to reflect the money fed to the machine and return to the caller
+            CurrentBalance += dollar;
+            return;
         }
 
         //Method to log new transaction to the audit log
         public void AuditLog(string transactionType, decimal previousBalance, decimal newBalance)
         {
+            //Path to the audit log file
             const string PATH = "C:\\Users\\Student\\git\\c-module-1-capstone-team-5\\19_Capstone\\Log.txt";
 
+            //Use the stream writer class to add a new entry to the audit log, the append: true option ensures it is added to the end of the existing file and old data is not overwritten
             using (StreamWriter sw = new StreamWriter(PATH, append: true))
             {
                 sw.WriteLine($"{DateTime.Now} {transactionType} {previousBalance:c} {newBalance:c}");
