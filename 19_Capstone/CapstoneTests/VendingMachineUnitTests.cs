@@ -7,52 +7,29 @@ namespace CapstoneTests
     public class VendingMachineUnitTests
     {
         [DataTestMethod]
-        [DataRow("10.00", @"
-Your change is $10.00.
-You will recieve:
-40 Quarters
-0 Dimes
-& 0 Nickels
-Press 'enter' to continue.
-Thank you!")]
-        [DataRow("10.15", @"
-Your change is $10.15.
-You will recieve:
-40 Quarters
-1 Dimes
-& 1 Nickels
-Press 'enter' to continue.
-Thank you!")]
-        [DataRow("2.85", @"
-Your change is $2.85.
-You will recieve:
-11 Quarters
-1 Dimes
-& 0 Nickels
-Press 'enter' to continue.
-Thank you!")]
-        [DataRow("7.65", @"
-Your change is $7.65.
-You will recieve:
-30 Quarters
-1 Dimes
-& 1 Nickels
-Press 'enter' to continue.
-Thank you!")]
-        [DataRow("0", "No changed received. Thank you for purchasing!")]
-
-        public void MakeChangeTests(string startingValue, string expectedReturn)
+        [DataRow("0", 0, 0, 0)]
+        [DataRow("10", 40, 0, 0)]
+        [DataRow("3.25", 13, 0, 0)]
+        [DataRow("3.40", 13, 1, 1)]
+        [DataRow("6.20", 24, 2, 0)]
+        [DataRow("9.15", 36, 1, 1)]
+        [DataRow("0.45", 1, 2, 0)]
+        [DataRow("-3.40", 0, 0, 0)]
+        public void MakeChangeTests(string startingValue, int expectedQuarters, int expectedDimes, int expectedNickels)
         {
             //Arrange
             VendingMachine vm = new VendingMachine();
             vm.CurrentBalance = decimal.Parse(startingValue);
+            decimal expectedChange = decimal.Parse(startingValue);
 
             //Act
-            string actualValue = vm.MakeChange();
+            Change actual = vm.MakeChange();
 
             //Assert
-            Assert.AreEqual(expectedReturn, actualValue);
-            Assert.AreEqual(0M, vm.CurrentBalance);
+            Assert.AreEqual(expectedChange, actual.TotalChangeAmount);
+            Assert.AreEqual(expectedQuarters, actual.Quarters);
+            Assert.AreEqual(expectedDimes, actual.Dimes);
+            Assert.AreEqual(expectedNickels, actual.Nickels);
         }
 
         [DataTestMethod]
@@ -75,32 +52,78 @@ Thank you!")]
         }
 
         [DataTestMethod]
-        [DataRow("B9", "10.00", "The slot you entered does not exist, returning to purchase menu")]
-        [DataRow("H1", "10.00", "The slot you entered does not exist, returning to purchase menu")]
-        [DataRow("A4", "0.00", "Sorry but you do not have enough funds please add more and try again!")]
-        [DataRow("B3", "0.50", "Sorry but you do not have enough funds please add more and try again!")]
-        [DataRow("A1", "15.00", @"
-You succesfully purchased Potato Crisps!
-Crunch Crunch, Yum!
-
-$3.05 has been deducted from your balance!")]
-        [DataRow("C4", "15.00", @"
-You succesfully purchased Heavy!
-Glug Glug, Yum!
-
-$1.50 has been deducted from your balance!")]
-
-        public void PurchaseItemTests(string slotToPurchase, string startingBalance, string expectedReturn)
+        [DataRow("A1", "Potato Crisps")]
+        [DataRow("A4", "Cloud Popcorn")]
+        [DataRow("B2", "Cowtales")]
+        [DataRow("B3", "Wonka Bar")]
+        [DataRow("C2", "Dr. Salt")]
+        [DataRow("D3", "Chiclets")]
+        public void PurchaseValidItemTest(string slotToPurchase, string expectedValue)
         {
             //Arrange
             VendingMachine vm = new VendingMachine();
-            vm.CurrentBalance = decimal.Parse(startingBalance);
+            vm.CurrentBalance = 10M;
             
             //Act
-            string actualValue = vm.PurchaseItem(slotToPurchase);
+            string actualValue = vm.PurchaseItem(slotToPurchase).Name;
 
             //Assert
-            Assert.AreEqual(expectedReturn, actualValue);
+            Assert.AreEqual(expectedValue, actualValue);
+        }
+
+        [DataTestMethod]
+        [DataRow("A11")]
+        [DataRow("F4")]
+        [DataRow("B5")]
+        [DataRow("E7")]
+        [DataRow("F99")]
+        [DataRow("C9")]
+        public void PurchaseItemThrowExceptionInvalidSlotTest(string slotToPurchase)
+        {
+            //Arrange
+            VendingMachine vm = new VendingMachine();
+            vm.CurrentBalance = 10M;
+
+            //Act and Assert
+            Assert.ThrowsException<PurchaseItemExceptionInvalidSlot>(
+            () => vm.PurchaseItem(slotToPurchase));
+        }
+
+        [DataTestMethod]
+        [DataRow("A1")]
+        [DataRow("B2")]
+        [DataRow("A4")]
+        [DataRow("B3")]
+        [DataRow("C2")]
+        [DataRow("D4")]
+        public void PurchaseItemThrowExceptionSoldOutTest(string slotToPurchase)
+        {
+            //Arrange
+            VendingMachine vm = new VendingMachine();
+            vm.items[slotToPurchase].Quantity = 0;
+
+            //Act and Assert
+            Assert.ThrowsException<PurchaseItemExceptionItemSoldOut>(
+            () => vm.PurchaseItem(slotToPurchase));
+        }
+
+        [DataTestMethod]
+        [DataRow("A3")]
+        [DataRow("B1")]
+        [DataRow("A2")]
+        [DataRow("B4")]
+        [DataRow("C3")]
+        [DataRow("D1")]
+        public void PurchaseItemThrowExceptionInsufficientFundsTest(string slotToPurchase)
+        {
+            //Arrange
+            VendingMachine vm = new VendingMachine();
+            vm.CurrentBalance = 0;
+
+            //Act and Assert
+            Assert.ThrowsException<PurchaseItemExceptionInsufficientFunds>(
+            () => vm.PurchaseItem(slotToPurchase));
         }
     }
 }
+

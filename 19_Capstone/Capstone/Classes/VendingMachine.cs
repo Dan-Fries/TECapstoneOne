@@ -12,7 +12,7 @@ namespace Capstone.Classes
         public Dictionary<string, Item> items = new Dictionary<string, Item>();
 
         //Dictionary to store messages for each type of item to be displayed when an item is purchased. Key is the item type and value is the message
-        private Dictionary<string, string> saleMessage = new Dictionary<string, string>()
+        public Dictionary<string, string> saleMessage = new Dictionary<string, string>()
         {
             { "Chip", "Crunch Crunch, Yum!" },
             { "Candy", "Munch Munch, Yum!" },
@@ -56,18 +56,18 @@ namespace Capstone.Classes
         }
 
         //Method to purchase an item returns a decimal with the amount charged for the transaction
-        public string PurchaseItem(string slot)
+        public Item PurchaseItem(string slot)
         {
             //Check if the user entered an invalid slot number return 0 since no transaction takes place
             if (!items.ContainsKey(slot))
             {
-                return "The slot you entered does not exist, returning to purchase menu";
+                throw new PurchaseItemExceptionInvalidSlot();
             }
 
             //Check if the item selected is sold out, if it is return 0 as no transaction takes place
             if (items[slot].Quantity == 0)
             {
-                return "Sorry but that item is sold out, returning to purchase menu";
+                throw new PurchaseItemExceptionItemSoldOut();
             }
 
             //We know the item exists in the dictionary now so set it to current Item
@@ -76,11 +76,10 @@ namespace Capstone.Classes
             //Check if the user has enough funds to complete the transaction if not return 0 and display a message otherwise process the transaction and return the purchase price to the caller
             if (currentItem.Price > CurrentBalance)    //Insufficient funds for purchase
             {
-                return "Sorry but you do not have enough funds please add more and try again!";
+                throw new PurchaseItemExceptionInsufficientFunds();
             }
             else                                //Successful purchase
             {
-
                 //Log the purchase to the audit log
                 AuditLog(currentItem.Type, CurrentBalance, CurrentBalance - currentItem.Price);
 
@@ -90,11 +89,7 @@ namespace Capstone.Classes
                 CurrentBalance -= currentItem.Price;
 
                 //Return a formatted string containing information about the purchase
-                return $@"
-You succesfully purchased {currentItem.Name}!
-{saleMessage[currentItem.Type]}
-
-{currentItem.Price:c} has been deducted from your balance!";
+                return currentItem;
             }
         }
 
@@ -139,23 +134,22 @@ You succesfully purchased {currentItem.Name}!
             }
         }
 
-        public string MakeChange()
+        public Change MakeChange()
         {
+            // Constant Values for the different coins
             const decimal Quarter = .25M;
             const decimal Dime = .10M;
             const decimal Nickel = .05M;
 
+            // Create and initialize counters for each type of coin
             int numberOfQuarters = 0;
             int numberOfDimes = 0;
             int numberOfNickels = 0;
+
+            // Store the starting balance so we can log the event
             decimal startingBalance = CurrentBalance;
 
-            AuditLog("GIVE CHANGE", CurrentBalance, 0.00M);
-
-            while (CurrentBalance <= 0)
-            {
-                return "No changed received. Thank you for purchasing!";
-            }
+            // Calculate the amount of each type of coin to return
             while (CurrentBalance >= .25M)
             {
                 numberOfQuarters = (int)Math.Truncate(CurrentBalance / Quarter);
@@ -172,14 +166,11 @@ You succesfully purchased {currentItem.Name}!
                 CurrentBalance = CurrentBalance % .05M;
             }
 
-            return $@"
-Your change is {startingBalance:c}.
-You will recieve:
-{numberOfQuarters} Quarters
-{numberOfDimes} Dimes
-& {numberOfNickels} Nickels
-Press 'enter' to continue.
-Thank you!";
+            // Log the event Give Change to the audit log
+            AuditLog("GIVE CHANGE", startingBalance, CurrentBalance);
+
+            //Return a new change object for menu to display
+            return new Change(startingBalance, numberOfQuarters, numberOfDimes, numberOfNickels);
         }
         #endregion
     }

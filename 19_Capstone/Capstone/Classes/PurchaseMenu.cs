@@ -28,13 +28,24 @@ namespace Capstone.Classes
             Console.Clear();
 
             //Display menu options to the user
-            Console.WriteLine("(1) Feed Money");
-            Console.WriteLine("(2) Select Product");
-            Console.WriteLine("(3) Finish Transaction");
+            Console.WriteLine($@"
+    _______    ______     ___    __                          __
+   /__  __//  / ____//    | ||  / //________________________/ //__(_))___________________ 
+     / //    / __//       | || / // /  _\\  / ___ \\  /  __  //  / //  / ___ \\  / ___ `//
+    / //    / //___       | ||/ // /  __// / // / // / //_/ //  / //  / // / // / //_/ // 
+   /_//    /_____//       |____//  \___// /_// /_//  \___,_//  /_//  /_// /_//  \__,  //  
+                                                                               /_____// 
+                    *************************************************
+                    **  Please choose from the following options:  **
+                    **           1. Feed Money                     **
+                    **           2. Select Product                 **
+                    **           3. Finish Transaction             **
+                    **                                             ** 
+                    **       Current Money Provided: {vm.CurrentBalance, 7:c}       **
+                    *************************************************
+");
 
-            //Display the current balance the 
-            Console.WriteLine();
-            Console.WriteLine($"Current Money Provided: {vm.CurrentBalance:c}");
+            //Call method to get input from the user
             GetUserMenuInput();
         }
 
@@ -43,6 +54,7 @@ namespace Capstone.Classes
         {
             //Prompt the user to make a selection and recieve input from the user
             int selection;
+            Console.WriteLine();
             Console.Write("Enter your selection: ");
             bool isValid = int.TryParse(Console.ReadLine(), out selection);
 
@@ -65,14 +77,41 @@ namespace Capstone.Classes
                     Display();
                     break;
                 case 3:                     //Call the make change method and then create a new menu object and call display when make change returns
-                    Console.WriteLine(vm.MakeChange());
-                    Console.ReadLine();
+                    DisplayChange();
                     Menu mn = new Menu(vm);
                     mn.Display();
                     break;
             }
         }
 
+        //Method to Display Change when the user exits the purchase menu
+        private void DisplayChange()
+        {
+            Console.WriteLine();
+
+            //Create a new change object and call Make Change
+            Change change = vm.MakeChange();
+
+            //Check if the change object holds no change
+            if (change.TotalChangeAmount == 0.00M)
+            {
+                Console.WriteLine("You had no remaining balance to make change with.");
+            }
+            else                //Change object has change so print that change
+            {
+                Console.WriteLine(
+$@"You are receiving {change.TotalChangeAmount:c} in change
+
+Dispensing {change.Quarters} Quarters, {change.Dimes} Dimes, and {change.Nickels} nickels");
+            }
+
+            //After returning from Make Change wait for the user to press enter before going back to main purchase menu
+            Console.WriteLine();
+            Console.WriteLine("Press Enter to continue..");
+            Console.ReadLine();
+        }
+
+        //Method to get input from the user to feed to the machine
         private int GetMoneyToFeed()
         {
             //Prompt the user to enter an amount of dollars to feed in whole dollar amounts
@@ -96,7 +135,7 @@ namespace Capstone.Classes
             //Clear the console before displaying the purchase submenu
             Console.Clear();
             //Display all items in the vending machine
-            DisplayItems();
+            DisplayItems.Display(vm);
 
             //Ask the user to enter a slot number corresponding to the item they want to purchase
             Console.WriteLine();
@@ -104,32 +143,43 @@ namespace Capstone.Classes
             string input = Console.ReadLine().ToUpper();            //Add a ToUpper method to user input for case insensitivity 
 
             //Pass user input to purchase item method which will determine if it is a valid purchase
-            string purchaseMessage = vm.PurchaseItem(input);
-            Console.WriteLine(purchaseMessage);
+            Item purchasedItem = null;
+            try
+            {
+                purchasedItem = vm.PurchaseItem(input);
+            }
+            catch (PurchaseItemExceptionInvalidSlot)
+            {
+                Console.WriteLine();
+                Console.WriteLine("The slot entered does not exist, returning to the purchase menu");
+            }
+            catch (PurchaseItemExceptionItemSoldOut)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Sorry but the item you selected is sold out, returning to the purchase menu");
+            }
+            catch (PurchaseItemExceptionInsufficientFunds)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Sorry you do not have enough funds to purchase that item, returning to the purchase menu");
+            }
+
+            //If purchase is succesful display item info
+            if (purchasedItem != null)
+            {
+                Console.WriteLine($@"
+You succesfully purchased {purchasedItem.Name}!
+{vm.saleMessage[purchasedItem.Type]}
+
+{purchasedItem.Price:c} has been deducted from your balance!");
+            }
 
             //After returning from purchase item wait for the user to press enter before going back to main purchase menu
-            Console.WriteLine("Press Enter to continue");
+            Console.WriteLine();
+            Console.WriteLine("Press Enter to continue..");
             Console.ReadLine();
-        }
-
-        public void DisplayItems()
-        {
-            Dictionary<string, Item> items = vm.items;
-
-            foreach (KeyValuePair<string, Item> kvp in items)
-            {
-                //If the item is sold out change display value to SOLD OUT otherwise display quantity remaining
-                if (kvp.Value.Quantity == 0)
-                {
-                    Console.WriteLine($"{kvp.Key}) {kvp.Value.Name} - {kvp.Value.Price} - SOLD OUT");
-                }
-                else
-                {
-                    Console.WriteLine($"{kvp.Key}) {kvp.Value.Name} - {kvp.Value.Price} - {kvp.Value.Quantity}");
-                }
-
-            }
         }
         #endregion
     }
 }
+
