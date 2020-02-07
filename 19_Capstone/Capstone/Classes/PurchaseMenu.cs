@@ -7,24 +7,37 @@ namespace Capstone.Classes
 {
     public class PurchaseMenu
     {
+        #region Properties
+        //Property to store the current balance the user has fed into the vending machine
         public decimal CurrentBalance { get; set; }
-        
-        
 
+        //Private property to store a reference to a vending machine object
         private VendingMachine VM { get; set; }
+        #endregion
+
+        #region Constructors
+        //Constructor that requires a reference to a vending machine object as well as resetting the Balance to 0 this is the only constructor that should be used
         public PurchaseMenu(VendingMachine vm)
         {
             VM = vm;
             CurrentBalance = 0;
-           
-        }
 
+        }
+        #endregion
+
+        #region Methods
+        //Method to display the purchase menu
         public void Display()
         {
+            //Clear the console whenever the display method is called
             Console.Clear();
+
+            //Display menu options to the user
             Console.WriteLine("(1) Feed Money");
             Console.WriteLine("(2) Select Product");
             Console.WriteLine("(3) Finish Transaction");
+            
+            //Display the current balance the 
             Console.WriteLine();
             Console.WriteLine($"Current Money Provided: {CurrentBalance}");
             GetUserMenuInput();
@@ -43,18 +56,8 @@ namespace Capstone.Classes
             }
             VM.AuditLog("FEED MONEY: ", CurrentBalance, CurrentBalance + dollar);
             CurrentBalance += dollar;
-            Console.Clear();
             Display();
         }
-
-        //private void PurchaseItem(string slot)
-        //{
-            
-        //    Item current = VM.Dispense(slot);
-        //    AuditLog(current.Type, CurrentBalance + current.Price, CurrentBalance);
-        //}
-
-
 
         private void GetUserMenuInput()
         {
@@ -75,7 +78,6 @@ namespace Capstone.Classes
                     break;
                 case 2:
                     PurchaseItemSubMenu();
-
                     break;
                 case 3:
                     Money money = new Money(VM);
@@ -102,6 +104,6 @@ namespace Capstone.Classes
 
         }
 
-        
+        #endregion
     }
 }

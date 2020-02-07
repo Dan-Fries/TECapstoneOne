@@ -8,7 +8,6 @@ namespace Capstone
         static void Main(string[] args)
         {
             VendingMachine vm = new VendingMachine();
-            vm.Stock();
             Menu mn = new Menu(vm);
             mn.Display();
         }
