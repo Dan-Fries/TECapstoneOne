@@ -172,6 +172,48 @@ namespace Capstone.Classes
                 report.WriteLine($"Total Sales: ${GetTotalSales}");
             }
         }
+
+        public void MakeChange()
+        {
+            const decimal Quarter = .25M;
+            const decimal Dime = .10M;
+            const decimal Nickel = .05M;
+            int numberOfQuarters = 0;
+            int numberOfDimes = 0;
+            int numberOfNickels = 0;
+
+            AuditLog("GIVE CHANGE", CurrentBalance, 0.00M);
+
+            while (CurrentBalance <= 0)
+            {
+                Console.WriteLine("No changed received. Thank you for purchasing!");
+                return;
+            }
+            while (CurrentBalance >= .25M)
+            {
+                numberOfQuarters = (int)Math.Truncate(CurrentBalance / Quarter);
+                CurrentBalance = CurrentBalance % .25M;
+            }
+            while (CurrentBalance >= .10M)
+            {
+                numberOfDimes = (int)Math.Truncate(CurrentBalance / Dime);
+                CurrentBalance = CurrentBalance % .10M;
+            }
+            while (CurrentBalance >= .05M)
+            {
+                numberOfNickels = (int)Math.Truncate(CurrentBalance / Nickel);
+                CurrentBalance = CurrentBalance % .05M;
+            }
+
+            Console.WriteLine($@"Your change is {CurrentBalance}.
+                                You will recieve:
+                                    {numberOfQuarters} Quarters
+                                    {numberOfDimes} Dimes
+                                  & {numberOfNickels} Nickels
+                                Press 'enter' to continue.
+                                Thank you!");
+            Console.ReadLine();
+        }
         #endregion
     }
 }

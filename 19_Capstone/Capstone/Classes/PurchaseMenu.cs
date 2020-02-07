@@ -65,9 +65,7 @@ namespace Capstone.Classes
                     Display();
                     break;
                 case 3:                     //Call the make change method and then create a new menu object and call display when make change returns
-                    Money money = new Money(vm);
-                    money.MakeChange(vm.CurrentBalance);
-                    vm.CurrentBalance = 0;
+                    vm.MakeChange();
                     Menu mn = new Menu(vm);
                     mn.Display();
                     break;
