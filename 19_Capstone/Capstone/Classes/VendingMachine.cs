@@ -88,11 +88,13 @@ namespace Capstone.Classes
                 GetTotalSales += currentItem.Price;
                 currentItem.Quantity--;
                 CurrentBalance -= currentItem.Price;
+
+                //Return a formatted string containing information about the purchase
                 return $@"
 You succesfully purchased {currentItem.Name}!
 {saleMessage[currentItem.Type]}
 
-{currentItem.Price} has been deducted from your balance!";
+{currentItem.Price:c} has been deducted from your balance!";
             }
         }
 
