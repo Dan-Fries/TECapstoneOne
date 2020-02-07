@@ -9,7 +9,7 @@ namespace Capstone.Classes
     {
         #region Properties
         //Dictionary to store vending machine items slot number is the key with an Item object stored as the value
-        private Dictionary<string, Item> items = new Dictionary<string, Item>();
+        public Dictionary<string, Item> items = new Dictionary<string, Item>();
 
         //Dictionary to store messages for each type of item to be displayed when an item is purchased. Key is the item type and value is the message
         private Dictionary<string, string> saleMessage = new Dictionary<string, string>()
@@ -32,8 +32,8 @@ namespace Capstone.Classes
         public VendingMachine()
         {
             GetTotalSales = 0;
-            Stock();
             CurrentBalance = 0;
+            Stock();
         }
         #endregion
 
@@ -55,59 +55,31 @@ namespace Capstone.Classes
             }
         }
 
-        //Method to display all items in the vending machine by slot number
-        public void DisplayItems()
-        {
-            foreach (KeyValuePair<string, Item> kvp in items)
-            {
-                //If the item is sold out change display value to SOLD OUT otherwise display quantity remaining
-                if (kvp.Value.Quantity == 0)
-                {
-                    Console.WriteLine($"{kvp.Key}) {kvp.Value.Name} - {kvp.Value.Price} - SOLD OUT");
-                }
-                else
-                {
-                    Console.WriteLine($"{kvp.Key}) {kvp.Value.Name} - {kvp.Value.Price} - {kvp.Value.Quantity}");
-                }
-
-            }
-        }
-
         //Method to purchase an item returns a decimal with the amount charged for the transaction
-        public void PurchaseItem(string slot)
+        public string PurchaseItem(string slot)
         {
             //Check if the user entered an invalid slot number return 0 since no transaction takes place
             if (!items.ContainsKey(slot))
             {
-                Console.WriteLine("The slot you entered does not exist, returning to purchase menu");
-                return;
+                return "The slot you entered does not exist, returning to purchase menu";
             }
 
             //Check if the item selected is sold out, if it is return 0 as no transaction takes place
             if (items[slot].Quantity == 0)
             {
-                Console.WriteLine("Sorry but that item is sold out, returning to purchase menu");
-                return;
+                return "Sorry but that item is sold out, returning to purchase menu";
             }
 
-            //Check if the user has enough funds to complete the transaction if not return 0 and display a message otherwise process the transaction and return the purchase price to the caller
+            //We know the item exists in the dictionary now so set it to current Item
             Item currentItem = items[slot];
+
+            //Check if the user has enough funds to complete the transaction if not return 0 and display a message otherwise process the transaction and return the purchase price to the caller
             if (currentItem.Price > CurrentBalance)    //Insufficient funds for purchase
             {
-                Console.WriteLine("Sorry but you do not have enough funds please add more and try again!");
-                return;
+                return "Sorry but you do not have enough funds please add more and try again!";
             }
             else                                //Successful purchase
             {
-                //Display purchase success message
-                Console.WriteLine($"You succesfully purchased {currentItem.Name}!");
-
-                //Display appropriate message based on type of item purchased
-                Console.WriteLine(saleMessage[currentItem.Type]);
-                Console.WriteLine();
-
-                //Inform the user how much has been deducted from their balance
-                Console.WriteLine($"{currentItem.Price} has been deducted from your balance!");
 
                 //Log the purchase to the audit log
                 AuditLog(currentItem.Type, CurrentBalance, CurrentBalance - currentItem.Price);
@@ -116,25 +88,19 @@ namespace Capstone.Classes
                 GetTotalSales += currentItem.Price;
                 currentItem.Quantity--;
                 CurrentBalance -= currentItem.Price;
-                return;
+
+                //Return a formatted string containing information about the purchase
+                return $@"
+You succesfully purchased {currentItem.Name}!
+{saleMessage[currentItem.Type]}
+
+{currentItem.Price:c} has been deducted from your balance!";
             }
         }
 
         //Method to feed money to the vending machine and update current balance
-        public void FeedMoney()
+        public void FeedMoney(int dollar)
         {
-            //Prompt the user to enter an amount of dollars to feed in whole dollar amounts
-            Console.WriteLine("How many dollars do you want to feed?: ");
-            int dollar;
-            bool isValid = int.TryParse(Console.ReadLine(), out dollar);
-
-            //Data validation
-            while (!isValid)
-            {
-                Console.WriteLine("You did not enter a valid amount please enter a whole dollar amount: ");
-                isValid = int.TryParse(Console.ReadLine(), out dollar);
-            }
-            
             //Once we have a valid user input log this ammount to the audit log
             AuditLog("FEED MONEY: ", CurrentBalance, CurrentBalance + dollar);
 
@@ -173,21 +139,22 @@ namespace Capstone.Classes
             }
         }
 
-        public void MakeChange()
+        public string MakeChange()
         {
             const decimal Quarter = .25M;
             const decimal Dime = .10M;
             const decimal Nickel = .05M;
+
             int numberOfQuarters = 0;
             int numberOfDimes = 0;
             int numberOfNickels = 0;
+            decimal startingBalance = CurrentBalance;
 
             AuditLog("GIVE CHANGE", CurrentBalance, 0.00M);
 
             while (CurrentBalance <= 0)
             {
-                Console.WriteLine("No changed received. Thank you for purchasing!");
-                return;
+                return "No changed received. Thank you for purchasing!";
             }
             while (CurrentBalance >= .25M)
             {
@@ -205,14 +172,14 @@ namespace Capstone.Classes
                 CurrentBalance = CurrentBalance % .05M;
             }
 
-            Console.WriteLine($@"Your change is {CurrentBalance}.
-                                You will recieve:
-                                    {numberOfQuarters} Quarters
-                                    {numberOfDimes} Dimes
-                                  & {numberOfNickels} Nickels
-                                Press 'enter' to continue.
-                                Thank you!");
-            Console.ReadLine();
+            return $@"
+Your change is {startingBalance:c}.
+You will recieve:
+{numberOfQuarters} Quarters
+{numberOfDimes} Dimes
+& {numberOfNickels} Nickels
+Press 'enter' to continue.
+Thank you!";
         }
         #endregion
     }

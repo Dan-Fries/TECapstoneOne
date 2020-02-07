@@ -40,7 +40,7 @@ namespace Capstone.Classes
             if (selection == 1)
             {
                 // Display Menu Items
-                vendingMachine.DisplayItems();
+                DisplayItems();
                 Console.WriteLine();
                 Console.WriteLine("Press Enter to continue");
                 Console.ReadLine();
@@ -75,6 +75,25 @@ namespace Capstone.Classes
                     Console.WriteLine("Please enter valid selection: ");
                     input = Console.ReadLine();
                 }               
+            }
+        }
+
+        public void DisplayItems()
+        {
+            Dictionary<string, Item> items = vendingMachine.items;
+
+            foreach (KeyValuePair<string, Item> kvp in items)
+            {
+                //If the item is sold out change display value to SOLD OUT otherwise display quantity remaining
+                if (kvp.Value.Quantity == 0)
+                {
+                    Console.WriteLine($"{kvp.Key}) {kvp.Value.Name} - {kvp.Value.Price} - SOLD OUT");
+                }
+                else
+                {
+                    Console.WriteLine($"{kvp.Key}) {kvp.Value.Name} - {kvp.Value.Price} - {kvp.Value.Quantity}");
+                }
+
             }
         }
         #endregion
